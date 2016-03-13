@@ -92,7 +92,7 @@ train_f1_score = predict_labels(clf, X_train, y_train)
 print "F1 score for training set: {}".format(train_f1_score)
 
 #print X_train
-raw_input()
+#raw_input()
 '''
 y_train = ?
 X_test = ?
