@@ -43,6 +43,7 @@ def predict_labels(clf, features, target):
     print 'accuracy:',accuracy
     return f1_score(target.values, y_pred)
 
+print('*** Part II:')
 student_data = pd.read_csv("student-data.csv")
 
 n_students = student_data['passed'].shape[0]
@@ -55,6 +56,8 @@ print "Number of students who passed: {}".format(n_passed)
 print "Number of students who failed: {}".format(n_failed)
 print "Number of features: {}".format(n_features)
 print "Graduation rate of the class: {:.2f}%".format(grad_rate)
+
+print('*** Part III:')
 
 feature_cols = list(student_data.columns[:-1])  # all columns but last are features
 target_col = student_data.columns[-1]  # last column is the target/label
@@ -85,10 +88,10 @@ y_train = (y_all.loc[X_all.index.isin(X_train.index)])
 X_test =X_all.loc[~X_all.index.isin(X_train.index)]
 y_test = y_all.loc[~X_all.index.isin(X_train.index)]
 
-#normalize features
+print('*** Part IV:')
+#Normalize features
 X_train=normalize(X_train)
 X_test=normalize(X_test)
-
 clf = DecisionTreeClassifier(random_state=0)
 train_classifier(clf, X_train, y_train)
 
