@@ -5,6 +5,7 @@ import time
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import f1_score
 from sklearn.metrics import accuracy_score
+from sklearn.preprocessing import normalize
 
 def preprocess_features(X):
     outX = pd.DataFrame(index=X.index)  # output dataframe, initially empty
@@ -27,6 +28,7 @@ def preprocess_features(X):
 def train_classifier(clf, X_train, y_train):
     print "Training {}...".format(clf.__class__.__name__)
     start = time.time()
+    #print X_train.head()
     clf.fit(X_train, y_train)
     end = time.time()
     print "Done!\nTraining time (secs): {:.3f}".format(end - start)
@@ -39,7 +41,7 @@ def predict_labels(clf, features, target):
     print "Done!\nPrediction time (secs): {:.3f}".format(end - start)
     accuracy=accuracy_score(target, y_pred)
     print 'accuracy:',accuracy
-    return f1_score(target.values, y_pred, pos_label='yes')
+    return f1_score(target.values, y_pred)
 
 student_data = pd.read_csv("student-data.csv")
 
@@ -63,7 +65,10 @@ X_all = student_data[feature_cols]  # feature values for all students
 y_all = student_data[target_col]  # corresponding targets/labels
 print "\nFeature values:-"
 print X_all.head()  # print the first 5 rows
+X_all = preprocess_features(X_all)
+y_all = y_all.replace(['yes', 'no'], [1, 0])
 
+print 'X_all after Preprocessing:\n',X_all.head()
 num_all = student_data.shape[0]  # same as len(student_data)
 num_train = 300  # about 75% of the data
 num_test = num_all - num_train
@@ -73,45 +78,19 @@ num_all = student_data.shape[0]  # same as len(student_data)
 num_train = 300  # about 75% of the data
 num_test = num_all - num_train
 
-# TODO: Then, select features (X) and corresponding labels (y) for the training and test sets
+#TODO: Then, select features (X) and corresponding labels (y) for the training and test sets
 # Note: Shuffle the data or randomly select samples to avoid any bias due to ordering in the dataset
 X_train = X_all.sample(num_train)
 y_train = (y_all.loc[X_all.index.isin(X_train.index)])
 X_test =X_all.loc[~X_all.index.isin(X_train.index)]
 y_test = y_all.loc[~X_all.index.isin(X_train.index)]
 
-X_train=X_train.as_matrix()
-y_train=y_train.values.tolist()
-X_test=X_test.as_matrix()
-y_test=y_test.values.tolist()
+#normalize features
+X_train=normalize(X_train)
+X_test=normalize(X_test)
 
 clf = DecisionTreeClassifier(random_state=0)
 train_classifier(clf, X_train, y_train)
 
-train_f1_score = predict_labels(clf, X_train, y_train)
+train_f1_score = predict_labels(clf, X_test, y_test)
 print "F1 score for training set: {}".format(train_f1_score)
-
-#print X_train
-#raw_input()
-'''
-y_train = ?
-X_test = ?
-y_test = ?
-print "Training set: {} samples".format(X_train.shape[0])
-print "Test set: {} samples".format(X_test.shape[0])
-# Note: If you need a validation set, extract it from within training data
-
-
-'''
-
-#X_all = preprocess_features(X_all)
-#print "Processed feature columns ({}):-\n{}".format(len(X_all.columns), list(X_all.columns))
-#raw_input()
-
-'''
-for i in range(student_data['passed'].shape[0]):
-    if(student_data['passed'][i]=='yes'):
-        student_data.loc[i,'passed']=1
-    else:
-        student_data.loc[i,'passed']=0
-'''
